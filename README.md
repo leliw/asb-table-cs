@@ -560,9 +560,8 @@ Now initial users are created by the SQL script, so remove it from java code and
 	    return users;
 	}
 ```
-
-
-https://docs.spring.io/spring-boot/docs/current/reference/html/howto.html#howto.data-initialization.using-basic-sql-scripts
+References:
+1. https://docs.spring.io/spring-boot/docs/current/reference/html/howto.html#howto.data-initialization.using-basic-sql-scripts
 
 
 
