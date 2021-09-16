@@ -1,0 +1,44 @@
+<h1 mat-dialog-title>Row Action :: <strong>{{action}}</strong></h1>
+<div mat-dialog-content class="dialog" style="width: 400px;">
+    <ng-tmplate *ngIf="action != 'Delete'; else elseTemplate">
+        <div class="row">
+            <div class="col">
+                <mat-form-field [style.width.%]="100">
+                    <input placeholder="Username" matInput [(ngModel)]="local_data.username" autocomplete="disabled">
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <mat-form-field [style.width.%]="100">
+                    <input [type]="hide ? 'password' : 'text'" placeholder="Password" matInput [(ngModel)]="local_data.password" autocomplete="new-password">
+                    <mat-icon matSuffix (click)="hide = !hide">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <mat-slide-toggle matInput [(ngModel)]="local_data.enabled" style="padding-bottom: 1.25em;">Enabled
+                </mat-slide-toggle>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <mat-form-field [style.width.%]="100" appearance="fill">
+                    <mat-label>Authorities</mat-label>
+                    <mat-select matInput [(ngModel)]="local_data.authorities" multiple>
+                        <mat-option value="ROLE_USER">User</mat-option>
+                        <mat-option value="ROLE_ADMIN">Admin</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+    </ng-tmplate>
+    <ng-template #elseTemplate>
+        Sure to delete <b>{{local_data.username}}</b>?
+    </ng-template>
+</div>
+<div mat-dialog-actions style="justify-content: flex-end;">
+    <button mat-button (click)="doAction()" mat-flat-button color="primary">{{action}}</button>
+    <button mat-button (click)="closeDialog()" mat-flat-button color="warn">Cancel</button>
+</div>

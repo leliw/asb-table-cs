@@ -1,0 +1,3 @@
+<app-login *ngIf="appService.authenticated === false || router.url === '/login'"></app-login>
+<app-nav *ngIf="appService.authenticated === true"></app-nav>
+<div *ngIf="appService.authenticated !== true && appService.authenticated !== false">Wait a moment ...</div>
