@@ -31,6 +31,15 @@ export class UsersComponent implements AfterViewInit {
     this.table.dataSource = this.dataSource;
   }
 
+  applyFilter(filterValue: string) {
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+    this.dataSource.filterChange.emit(filterValue);
+    console.log(this.dataSource.filter);
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+
   openDialog(action: string, obj) {
     obj.action = action;
     const dialogRef = this.dialog.open(UsersDialogComponent, {

@@ -430,6 +430,61 @@ $ # Get PID for nodejs and insert below
 $ kill PID
 $ ng serve &
 ```
+## Filtering
+
+When we look for examples of filtering in the Agnular Material Table, the results use MatTableDataSource class. But the Aangular Generator uses pure DataSource class from cdk library. In this case implmenetation of filtering is a little more complicated, but let's do it by hard.
+
+Add filter value and filterEmitter properites in *users-datasource.ts*:
+```typescript
+  filter: string;
+  filterChange = new EventEmitter<string>();
+```
+and filtering method usig filter property:
+```typescript
+  private getFilteredData(data: UsersItem[]): UsersItem[] {
+    if (this.filter)
+      return data.filter(user => 
+        user.username.toLowerCase().includes(this.filter)
+        );
+    else
+      return data;
+  }
+```
+add modify connect() method to use getFilteredData() and react to the event:
+```typescript
+   connect(): Observable<UsersItem[]> {
+    if (this.paginator && this.sort) {
+      // Combine everything that affects the rendered data into one update
+      // stream for the data-table to consume.
+      return merge(this.paginator.page, this.sort.sortChange, this.filterChange, 
+        this.http.get<UsersItem[]>(this.apiUrl).pipe(map(data => this.data = data)))
+        .pipe(map(() => {
+          return this.getPagedData(this.getSortedData(this.getFilteredData([...this.data ])));
+        }));
+    } else {
+      throw Error('Please set the paginator and sort on the data source before connecting.');
+    }
+  }
+```
+Add applyFilter method in *user.component.ts* that sets filter property and emmits event:
+```typescript
+  applyFilter(filterValue: string) {
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+    this.dataSource.filterChange.emit(filterValue);
+    console.log(this.dataSource.filter);
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+```
+Add filter text box in *user.components.html*:
+```html
+<div class="mat-elevation-z8">
+  
+  <mat-form-field>
+    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+  </mat-form-field>
+```
 
 ## Minor improvements in backend
 

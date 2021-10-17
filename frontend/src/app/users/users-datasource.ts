@@ -5,6 +5,7 @@ import { catchError, map } from 'rxjs/operators';
 import { Observable, of as observableOf, merge, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { EventEmitter } from '@angular/core';
 
 // TODO: Replace this with your own data model type
 export interface UsersItem {
@@ -24,7 +25,9 @@ export interface UsersItem {
   data: UsersItem[] = [];
   paginator: MatPaginator | undefined;
   sort: MatSort | undefined;
-
+  filter: string;
+  filterChange = new EventEmitter<string>();
+  
   apiUrl = environment.apiUrl + '/users';
 
   constructor(private http: HttpClient) {
@@ -40,10 +43,10 @@ export interface UsersItem {
     if (this.paginator && this.sort) {
       // Combine everything that affects the rendered data into one update
       // stream for the data-table to consume.
-      return merge(this.paginator.page, this.sort.sortChange,
+      return merge(this.paginator.page, this.sort.sortChange, this.filterChange, 
         this.http.get<UsersItem[]>(this.apiUrl).pipe(map(data => this.data = data)))
         .pipe(map(() => {
-          return this.getPagedData(this.getSortedData([...this.data ]));
+          return this.getPagedData(this.getSortedData(this.getFilteredData([...this.data ])));
         }));
     } else {
       throw Error('Please set the paginator and sort on the data source before connecting.');
@@ -86,6 +89,15 @@ export interface UsersItem {
         default: return 0;
       }
     });
+  }
+
+  private getFilteredData(data: UsersItem[]): UsersItem[] {
+    if (this.filter)
+      return data.filter(user => 
+        user.username.toLowerCase().includes(this.filter)
+        );
+    else
+      return data;
   }
 
   public getItem(id: number): Observable<UsersItem> {
